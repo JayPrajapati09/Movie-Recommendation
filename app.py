@@ -2,16 +2,17 @@ import pandas as pd
 import streamlit as st
 import pickle
 
-st.title("Movie Recommendation App")
+st.title("Ready To Watch")
 st.write("Get movie recommendations based on your favorite movie.")
 
 df = pd.read_csv("wiki_movie_plots_deduped.csv")
+df["Main_title"] = df["Title"] + " (" + df["Release Year"].astype(str) + ")"
 
 with open("movie_top_k.pickle", "rb") as file:
     model = pickle.load(file)
 
 ## 1. Movie Selection
-movie_list = df['Title'].values
+movie_list = df['Main_title'].values
 selected_movie = st.selectbox("Select a movie you like:", movie_list)
 
 ## if movie is not found tell user to select a valid movie
@@ -22,7 +23,7 @@ if selected_movie not in movie_list:
 ## 2. Show Selected Movie Info (Collapsible)
 with st.expander("Show Selected Movie Info"):
     # Find the movie info
-    movie_info = df[df['Title'] == selected_movie].iloc[0]
+    movie_info = df[df['Main_title'] == selected_movie].iloc[0]
     
     st.write(f"**Title:** {movie_info['Title']}")
     st.write(f"**Release Year:** {movie_info['Release Year']}")
@@ -37,7 +38,7 @@ with st.expander("Show Selected Movie Info"):
 ## 3. Recommendation Function 
 def get_recommendations(movie_title, model_df, df, top_k=10):
     
-    movie_idx = df.index[df['Title'] == movie_title][0]
+    movie_idx = df.index[df['Main_title'] == movie_title][0]
     
     recommendation_row = model_df.iloc[movie_idx]
 
@@ -46,7 +47,7 @@ def get_recommendations(movie_title, model_df, df, top_k=10):
         rec_index = rec_list[0]  
         rec_score = rec_list[1] 
         
-        rec_title = df.iloc[rec_index]['Title'] 
+        rec_title = df.iloc[rec_index]['Main_title'] 
             
         recommended_movies.append({
             'Title': rec_title, 

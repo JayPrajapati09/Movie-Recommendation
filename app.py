@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import pickle
 
-st.title("Ready To Watch")
+st.title("Ready To Watch📽️")
 st.write("Get movie recommendations based on your favorite movie.")
 
 df = pd.read_csv("wiki_movie_plots_deduped.csv")
